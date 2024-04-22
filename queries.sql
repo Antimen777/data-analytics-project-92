@@ -10,3 +10,12 @@ join products p on s.product_id = p.product_id
 group by seller
 order by income desc
 limit 10
+
+--Высчитываем среднюю выручку продавцов и отсекаем тех у кого больше среднего через having и подзапрос.
+select first_name || ' ' || last_name as seller, floor(avg(quantity * price)) as average_income
+from employees e
+left join sales s on e.employee_id = s.sales_person_id
+join products p on s.product_id = p.product_id
+group by seller
+having avg(quantity * price) < (select avg(quantity * price) from sales join products on sales.product_id = products.product_id)
+order by average_income
