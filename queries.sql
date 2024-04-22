@@ -14,8 +14,16 @@ limit 10
 --Высчитываем среднюю выручку продавцов и отсекаем тех у кого больше среднего через having и подзапрос.
 select first_name || ' ' || last_name as seller, floor(avg(quantity * price)) as average_income
 from employees e
-left join sales s on e.employee_id = s.sales_person_id
+join sales s on e.employee_id = s.sales_person_id
 join products p on s.product_id = p.product_id
 group by seller
 having avg(quantity * price) < (select avg(quantity * price) from sales join products on sales.product_id = products.product_id)
 order by average_income
+
+--Разграничиваем общую выручку продавцов по дням недели и сортируем в правильном порядке.
+select first_name || ' ' || last_name as seller, to_char(sale_date, 'day') as day_of_week, floor(sum(quantity * price)) as income
+from employees e
+join sales s on e.employee_id = s.sales_person_id
+join products p on s.product_id = p.product_id
+group by seller, day_of_week, to_char(sale_date, 'ID')
+order by to_char(sale_date, 'ID'), seller
