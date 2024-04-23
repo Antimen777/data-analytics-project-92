@@ -37,3 +37,14 @@ select age_category, count(age_category) as age_count
 from tab
 group by age_category
 order by age_category
+
+--Через подзапрос группируем по месяцам, добавляя необходимые столбцы. Соединяем таблицы и высчитываем уникальных покупателей и выручку за месяц.
+with tab as (
+	select to_char(sale_date, 'YYYY-MM') as selling_month, customer_id, product_id, quantity
+	from sales
+)
+select selling_month, count(distinct customer_id) as total_customers, floor(sum(quantity * price)) as income
+from tab
+join products on tab.product_id = products.product_id
+group by selling_month
+order by selling_month
